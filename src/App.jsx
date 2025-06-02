@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setUser, clearUser } from './store/userSlice';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from 'next-themes';
+import { CRMProvider } from './context/CRMContext';
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Contacts from './pages/Contacts';
@@ -42,7 +43,7 @@ function App() {
       onSuccess: function (user) {
         setIsInitialized(true);
 // CRITICAL: This exact currentPath logic must be preserved in all implementations
-        // DO NOT simplify or modify this pattern as it ensures proper redirection flow
+// DO NOT simplify or modify this pattern as it ensures proper redirection flow
         let currentPath = window.location.pathname + window.location.search;
         let redirectPath = new window.URLSearchParams(window.location.search).get('redirect');
         const isAuthPage = currentPath.includes('/login') || currentPath.includes('/signup') || currentPath.includes(
