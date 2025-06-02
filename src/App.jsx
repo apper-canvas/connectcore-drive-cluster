@@ -117,18 +117,20 @@ function App() {
     return <div className="loading">Initializing application...</div>;
   }
 
-  return (
+return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AuthContext.Provider value={authMethods}>
         {isAuthenticated ? (
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/contacts" element={<Contacts />} />
-              <Route path="/pipeline" element={<Pipeline />} />
-              <Route path="/activities" element={<Activities />} />
-            </Routes>
-          </Layout>
+          <CRMProvider>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/contacts" element={<Contacts />} />
+                <Route path="/pipeline" element={<Pipeline />} />
+                <Route path="/activities" element={<Activities />} />
+              </Routes>
+            </Layout>
+          </CRMProvider>
         ) : (
           <Routes>
             <Route path="/login" element={<Login />} />
