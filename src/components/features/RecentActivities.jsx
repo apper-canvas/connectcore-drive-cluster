@@ -64,16 +64,15 @@ const RecentActivities = () => {
                 </div>
 
                 <Button variant="ghost" size="sm">
+<Button variant="ghost" size="sm">
                   <ApperIcon name="ExternalLink" className="h-4 w-4" />
                 </Button>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <ApperIcon name="Calendar" className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-            <p className="text-muted-foreground">No recent activities</p>
-          </div>
+            No recent activities found
+          </p>
         )}
       </CardContent>
     </Card>

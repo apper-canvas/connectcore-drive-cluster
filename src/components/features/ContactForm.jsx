@@ -5,8 +5,8 @@ import { Label } from '../ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 import { contactSources } from '../../constants/crmData';
-
 const ContactForm = ({ contact, onSubmit, onCancel }) => {
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: contact?.firstName || '',
     lastName: contact?.lastName || '',
@@ -17,17 +17,23 @@ const ContactForm = ({ contact, onSubmit, onCancel }) => {
     source: contact?.source || '',
     tags: contact?.tags?.join(', ') || '',
     ...contact
-  });
+});
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit({
-      ...formData,
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
-      updatedAt: new Date()
-    });
+    setLoading(true);
+    try {
+      await onSubmit({
+        ...formData,
+        tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
+        updatedAt: new Date()
+      });
+    } catch (error) {
+      console.error('Failed to submit form:', error);
+    } finally {
+      setLoading(false);
+    }
   };
-
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -121,12 +127,19 @@ const ContactForm = ({ contact, onSubmit, onCancel }) => {
         />
       </div>
 
-      <div className="flex justify-end gap-3 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
+<div className="flex justify-end gap-3 pt-4">
+        <Button type="button" variant="outline" onClick={onCancel} disabled={loading}>
           Cancel
         </Button>
-        <Button type="submit" className="crm-button-primary">
-          {contact ? 'Update Contact' : 'Add Contact'}
+        <Button type="submit" className="crm-button-primary" disabled={loading}>
+          {loading ? (
+            <div className="flex items-center gap-2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+              {contact ? 'Updating...' : 'Adding...'}
+            </div>
+          ) : (
+            contact ? 'Update Contact' : 'Add Contact'
+          )}
         </Button>
       </div>
     </form>

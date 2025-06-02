@@ -1,16 +1,73 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Progress } from '../components/ui/progress';
 import ApperIcon from '../components/ApperIcon';
-import { useCRM } from '../context/CRMContext';
 import DashboardMetrics from '../components/features/DashboardMetrics';
 import RecentActivities from '../components/features/RecentActivities';
 import SalesChart from '../components/features/SalesChart';
 import { formatCurrency } from '../utils/formatters';
+import contactService from '../services/contactService';
+import dealService from '../services/dealService';
+import activityService from '../services/activityService';
+import { toast } from 'sonner';
 
 const Dashboard = () => {
-  const { state } = useCRM();
-  const { contacts, deals, activities } = state;
+  const [contacts, setContacts] = useState([]);
+  const [deals, setDeals] = useState([]);
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch all data in parallel
+        const [contactsData, dealsData, activitiesData] = await Promise.all([
+          contactService.fetchContacts(),
+          dealService.fetchDeals(),
+          activityService.fetchActivities()
+        ]);
+        
+        setContacts(contactsData);
+        setDeals(dealsData);
+        setActivities(activitiesData);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setError('Failed to load dashboard data');
+        toast.error('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-600 mb-4">{error}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   const totalDealsValue = deals.reduce((sum, deal) => sum + deal.value, 0);
   const completedActivities = activities.filter(activity => activity.completed).length;

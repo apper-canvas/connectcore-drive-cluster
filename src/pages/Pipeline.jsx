@@ -153,7 +153,7 @@ const Pipeline = () => {
               Pipeline Summary
             </CardTitle>
           </CardHeader>
-          <CardContent>
+<CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-crm-blue-600">
@@ -169,7 +169,7 @@ const Pipeline = () => {
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">
-                  {Math.round(state.deals.reduce((sum, deal) => sum + deal.probability, 0) / state.deals.length)}%
+                  {state.deals.length > 0 ? Math.round(state.deals.reduce((sum, deal) => sum + deal.probability, 0) / state.deals.length) : 0}%
                 </div>
                 <p className="text-sm text-muted-foreground">Average Probability</p>
               </div>

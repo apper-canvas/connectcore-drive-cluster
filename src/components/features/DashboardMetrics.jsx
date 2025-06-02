@@ -1,16 +1,62 @@
-import { Card, CardContent } from '../ui/card';
-import ApperIcon from '../ApperIcon';
-import { useCRM } from '../../context/CRMContext';
-import { formatCurrency } from '../../utils/formatters';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Badge } from '../ui/badge';
+import ApperIcon from '../ApperIcon';
+import { formatCurrency } from '../../utils/formatters';
+import contactService from '../../services/contactService';
+import dealService from '../../services/dealService';
+import activityService from '../../services/activityService';
 
 const DashboardMetrics = () => {
-  const { state } = useCRM();
+  const [contacts, setContacts] = useState([]);
+  const [deals, setDeals] = useState([]);
+  const [activities, setActivities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMetricsData = async () => {
+      try {
+        setLoading(true);
+        const [contactsData, dealsData, activitiesData] = await Promise.all([
+          contactService.fetchContacts(),
+          dealService.fetchDeals(),
+          activityService.fetchActivities()
+        ]);
+        setContacts(contactsData);
+        setDeals(dealsData);
+        setActivities(activitiesData);
+      } catch (error) {
+        console.error('Error fetching metrics data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMetricsData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} className="crm-card">
+            <CardContent className="p-6">
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+);
+  }
 
   const metrics = [
     {
       title: 'Total Contacts',
-      value: state.contacts.length,
+      value: contacts.length,
       icon: 'Users',
       color: 'text-crm-blue-600',
       bgColor: 'bg-crm-blue-50',
@@ -19,7 +65,7 @@ const DashboardMetrics = () => {
     },
     {
       title: 'Active Deals',
-      value: state.deals.length,
+      value: deals.length,
       icon: 'TrendingUp',
       color: 'text-crm-teal-600',
       bgColor: 'bg-crm-teal-50',
@@ -28,7 +74,7 @@ const DashboardMetrics = () => {
     },
     {
       title: 'Pipeline Value',
-      value: formatCurrency(state.deals.reduce((sum, deal) => sum + deal.value, 0)),
+      value: formatCurrency(deals.reduce((sum, deal) => sum + (deal.value || 0), 0)),
       icon: 'DollarSign',
       color: 'text-green-600',
       bgColor: 'bg-green-50',
@@ -37,7 +83,7 @@ const DashboardMetrics = () => {
     },
     {
       title: 'Pending Activities',
-      value: state.activities.filter(activity => !activity.completed).length,
+      value: activities.filter(activity => !activity.completed).length,
       icon: 'Clock',
       color: 'text-orange-600',
       bgColor: 'bg-orange-50',
@@ -45,7 +91,6 @@ const DashboardMetrics = () => {
       changeType: 'negative'
     }
   ];
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

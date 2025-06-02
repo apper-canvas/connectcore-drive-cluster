@@ -16,6 +16,7 @@ const Contacts = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedContact, setSelectedContact] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState({});
 
   const filteredContacts = state.contacts.filter(contact =>
     contact.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -35,11 +36,18 @@ const Contacts = () => {
     toast.success('Contact updated successfully');
     setSelectedContact(null);
     setIsDialogOpen(false);
-  };
+};
 
-  const handleDeleteContact = (contactId) => {
-    dispatch({ type: 'DELETE_CONTACT', payload: contactId });
-    toast.success('Contact deleted successfully');
+  const handleDeleteContact = async (contactId) => {
+    setDeleteLoading(prev => ({ ...prev, [contactId]: true }));
+    try {
+      dispatch({ type: 'DELETE_CONTACT', payload: contactId });
+      toast.success('Contact deleted successfully');
+    } catch (error) {
+      toast.error('Failed to delete contact');
+    } finally {
+      setDeleteLoading(prev => ({ ...prev, [contactId]: false }));
+    }
   };
 
   const containerVariants = {
@@ -174,13 +182,18 @@ const Contacts = () => {
                 
                 <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t">
                   <span>Added {formatDate(contact.createdAt)}</span>
-                  <Button
+<Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDeleteContact(contact.id)}
+                    disabled={deleteLoading[contact.id]}
                     className="text-destructive hover:text-destructive-foreground hover:bg-destructive h-6 px-2"
                   >
-                    <ApperIcon name="Trash2" className="h-3 w-3" />
+                    {deleteLoading[contact.id] ? (
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current"></div>
+                    ) : (
+                      <ApperIcon name="Trash2" className="h-3 w-3" />
+                    )}
                   </Button>
                 </div>
               </CardContent>
