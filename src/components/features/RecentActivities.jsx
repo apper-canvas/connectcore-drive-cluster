@@ -61,16 +61,16 @@ const RecentActivities = () => {
                     <span>{getContactName(activity.contactId)}</span>
                     <span>{formatDateTime(activity.dueDate)}</span>
                   </div>
-                </div>
+</div>
 
                 <Button variant="ghost" size="sm">
-<Button variant="ghost" size="sm">
                   <ApperIcon name="ExternalLink" className="h-4 w-4" />
                 </Button>
               </div>
             ))}
           </div>
         ) : (
+          <p className="text-center text-muted-foreground py-8">
             No recent activities found
           </p>
         )}
