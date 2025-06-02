@@ -207,10 +207,8 @@ const Activities = () => {
           </TabsContent>
         </Tabs>
       </motion.div>
-
-      <motion.div variants={itemVariants}>
+<motion.div variants={itemVariants}>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="crm-card">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-crm-blue-600">
@@ -218,7 +216,9 @@ const Activities = () => {
               </div>
               <p className="text-sm text-muted-foreground">Total Activities</p>
             </CardContent>
-<Card className="crm-card">
+          </Card>
+          
+          <Card className="crm-card">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-orange-600">
                 {state.activities.filter(a => !a.completed).length}
@@ -226,7 +226,8 @@ const Activities = () => {
               <p className="text-sm text-muted-foreground">Pending</p>
             </CardContent>
           </Card>
-<Card className="crm-card">
+          
+          <Card className="crm-card">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-green-600">
                 {state.activities.filter(a => a.completed).length}
@@ -234,7 +235,8 @@ const Activities = () => {
               <p className="text-sm text-muted-foreground">Completed</p>
             </CardContent>
           </Card>
-<Card className="crm-card">
+          
+          <Card className="crm-card">
             <CardContent className="p-4 text-center">
               <div className="text-2xl font-bold text-red-600">
                 {state.activities.filter(a => !a.completed && new Date(a.dueDate) < new Date()).length}
